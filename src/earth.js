@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button} from '@material-ui/core';
 import {withStore} from './store';
-import { Viewer, Entity, BillboardGraphics, PolylineGraphics } from "resium";
-import { Cartesian3, ArcGisMapServerImageryProvider } from "cesium";
+import { Viewer, Entity, BillboardGraphics, PolylineGraphics, LabelGraphics } from "resium";
+import { Cartesian3, ArcGisMapServerImageryProvider, HorizontalOrigin, VerticalOrigin, Color } from "cesium";
 import TLEJS from 'tle.js';
 import SatIcon from './saticon.png';
 
@@ -34,8 +34,9 @@ class Earth extends React.Component {
 						let track = tlejs.getGroundTrackLngLat(tleArr);
 						let positions = track[1].map(arr => Cartesian3.fromDegrees(arr[0], arr[1]));
 						return <Entity key={o.name} position={Cartesian3.fromDegrees(latlng.lng, latlng.lat)}>
+							<LabelGraphics text={o.name} horizontalOrigin={HorizontalOrigin.LEFT} VerticalOrigin={VerticalOrigin.TOP}/>
 							<BillboardGraphics image={SatIcon} scale={0.1}/>
-							<PolylineGraphics positions={positions}/>
+							<PolylineGraphics positions={positions} material={Color.DARKGOLDENROD}/>
 						</Entity>})
 					}
 				</Viewer>
