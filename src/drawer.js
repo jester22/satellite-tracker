@@ -19,6 +19,24 @@ class MyDrawer extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		this.reQuery();
+	}
+	
+	reQuery = async () => {
+		let tracking = this.props.store.get('tracking') || [];
+		let promises = [];
+		for (const o of tracking) {
+			promises.push(fetch(`https://data.ivanstanojevic.me/api/tle/${o.satelliteId}`));
+		}
+		let values = await Promise.all(promises);
+		let sats = await Promise.all(values.map(o => o.json()));
+		this.props.store.set('tracking', sats);
+		setTimeout(() => {
+			this.reQuery();
+		}, 1000 * 3);
+	}
+
 	handleChange = name => event => {
 		this.setState({
 			[name]: event.target.value,
@@ -33,7 +51,6 @@ class MyDrawer extends React.Component {
 						return res.json();
 					})
 					.then((json) => {
-						console.log(json);
 						this.setState({searchResult: json.member})
 					})
 					.catch((err) => {
